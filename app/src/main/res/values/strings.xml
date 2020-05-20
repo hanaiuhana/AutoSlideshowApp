@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AutoSlideshowApp </string>
+    <string name="back_button_text">◀</string>
+    <string name="forward_button_text">▶</string>
+    <string name="start_button_text">START</string>
+    <string name="stop_button_text">STOP</string>
+</resources>
