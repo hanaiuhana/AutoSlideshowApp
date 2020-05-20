@@ -3,6 +3,7 @@ package jp.techacademy.yui.tanakayui.autoslideshowapp
 import android.Manifest
 import android.content.ContentUris
 import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         // Android 6.0以降の場合
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // パーミッションの許可状態を確認する
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
                 // 許可されている
                 getContentsInfo()
             } else {
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             getContentsInfo()
         }
+
 
 
         //再生・停止ボタンの切り替え
@@ -61,7 +63,6 @@ class MainActivity : AppCompatActivity() {
                 forward_button.isClickable = true
                 back_button.isClickable = true
             }
-
         }
         //進むボタンクリック時の処理
         forward_button.setOnClickListener {
@@ -74,6 +75,18 @@ class MainActivity : AppCompatActivity() {
             showPreviousPhoto()
         }
 
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_CODE ->
+                if (grantResults[0] == PERMISSION_GRANTED) {
+                    Log.d("ANDROID", "許可された")
+                    getContentsInfo()
+                } else {
+                    Log.d("ANDROID", "許可されなかった")
+                    //ボタンを押すと、アプリが落ちるので、対応策を考える
+                }
+        }
     }
 
     //Galleyの写真取得
