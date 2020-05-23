@@ -1,7 +1,6 @@
 package jp.techacademy.yui.tanakayui.autoslideshowapp
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
@@ -42,6 +41,12 @@ class MainActivity : AppCompatActivity() {
         stopButtonText = resources.getString(R.string.stop_button_text)
         color= getColor(this, R.color.color_blue_slideshow)
 
+        Log.d("testtest","get前：startUpFirst:" + startUpFirst)
+        if (savedInstanceState != null) {
+            startUpFirst = savedInstanceState.getBoolean("START_UP_FIRST")
+            Log.d("testtest","get後：startUpFirst:" + startUpFirst)
+        }
+
         // Android 6.0以降の場合
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // パーミッションの許可状態を確認する
@@ -69,15 +74,16 @@ class MainActivity : AppCompatActivity() {
                 clickStop()
             }
         }
+
         //進むボタンクリック時の処理
         forward_button.setOnClickListener {
             Log.d("testtest","クリック！")
-            showNextPhoto()
+            showNextPicture()
         }
         //戻るボタンクリック時の処理
         back_button.setOnClickListener {
             Log.d("testtest","クリック！")
-            showPreviousPhoto()
+            showPreviousPicture()
         }
 
     }
@@ -123,15 +129,16 @@ class MainActivity : AppCompatActivity() {
                 count++
             } while (cursor.moveToNext())
 
-            //1枚目の画像をImageViewにをセットする
-            if (startUpFirst == true) {
+//            1枚目の画像をImageViewにをセットする
+            if (startUpFirst) {
                 picture.setImageURI((uriArrayList[0]))
+
             }
         }
         cursor.close()
     }
     //次の写真を呼び出す
-    private fun showNextPhoto(){
+    private fun showNextPicture(){
         if (showPictureNum < (pictureNum - 1)) {
             showPictureNum++
         } else {
@@ -141,7 +148,7 @@ class MainActivity : AppCompatActivity() {
         picture.setImageURI(uriArrayList[showPictureNum])
     }
     //前の写真を呼び出す
-    private fun showPreviousPhoto(){
+    private fun showPreviousPicture(){
         if (showPictureNum > 0) {
             showPictureNum--
         } else {
@@ -149,6 +156,11 @@ class MainActivity : AppCompatActivity() {
         }
         Log.d("testtest",(showPictureNum+ 1).toString() + "枚目")
         picture.setImageURI(uriArrayList[showPictureNum])
+    }
+    //画面回転時対応→回転時に表示していた写真をセットする
+    private fun showCurrentPicture(){
+        picture.setImageURI(uriArrayList[showPictureNum])
+
     }
 
     //再生ボタン押下時の処理
@@ -176,7 +188,7 @@ class MainActivity : AppCompatActivity() {
         mTimer!!.schedule(object : TimerTask() {
             override fun run() {
                 mHandler.post {
-                    showNextPhoto()
+                    showNextPicture()
                 }
             }
         }, 2000, 2000)
@@ -202,14 +214,14 @@ class MainActivity : AppCompatActivity() {
         //保存領域から「CONTENT_VALUE」というキーの数値を取得
         showPictureNum = savedInstanceState.getInt("COUNT_VALUE")
         startStopButtonText = savedInstanceState.getString("START_STOP_BUTTON_TEXT")
-        startUpFirst = savedInstanceState.getBoolean("START_UP_FIRST")
         if (startStopButtonText == startButtonText) {
             //再生ボタン表示時
-//            clickStop()
+            showCurrentPicture()
         } else if (startStopButtonText == stopButtonText) {
             //停止ボタン表示時
-//            clickStop()
+            showCurrentPicture()
             clickStart()
         }
     }
+
 }
