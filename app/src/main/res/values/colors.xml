@@ -5,6 +5,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="color_navy_main">#355469</color>
     <color name="color_pink_background">#fdeadf</color>
-    <color name="color_gray_off">#777777</color>
-    <color name="color_blue_slideshow">#cde4f1</color>
+    <color name="color_gray_off">#99999999</color>
+    <color name="color_blue_slideshow">#e9e6f3</color>
 </resources>

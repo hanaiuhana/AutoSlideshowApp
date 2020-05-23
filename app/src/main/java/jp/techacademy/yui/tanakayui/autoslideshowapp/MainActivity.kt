@@ -31,7 +31,8 @@ class MainActivity : AppCompatActivity() {
     private var mHandler = Handler()
     private var color = 0
 
-    @SuppressLint("ResourceAsColor")
+    private var startUpFirst = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -123,7 +124,9 @@ class MainActivity : AppCompatActivity() {
             } while (cursor.moveToNext())
 
             //1枚目の画像をImageViewにをセットする
-            picture.setImageURI((uriArrayList[0]))
+            if (startUpFirst == true) {
+                picture.setImageURI((uriArrayList[0]))
+            }
         }
         cursor.close()
     }
@@ -151,16 +154,16 @@ class MainActivity : AppCompatActivity() {
     //再生ボタン押下時の処理
     private fun clickStart(){
         start_stop_button.setText(R.string.stop_button_text)
-        forward_button.isClickable = false
-        back_button.isClickable = false
+        forward_button.isEnabled = false
+        back_button.isEnabled = false
         activity_background.setBackgroundColor(color)
         setTimer()
     }
     //停止ボタン押下時の処理
     private fun clickStop(){
         start_stop_button.setText(R.string.start_button_text)
-        forward_button.isClickable = true
-        back_button.isClickable = true
+        forward_button.isEnabled = true
+        back_button.isEnabled = true
         var color= getColor(this, R.color.color_pink_background)
         activity_background.setBackgroundColor(color)
         mTimer!!.cancel()
@@ -182,11 +185,14 @@ class MainActivity : AppCompatActivity() {
     //画面の回転時に呼び出される（データを保存する）
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mTimer!!.cancel()
+        if (mTimer != null) {
+            mTimer!!.cancel()
+        }
 
         //保存領域に「CONTENT_VALUE」というキーの数値を保存
         outState.putInt("COUNT_VALUE", showPictureNum)
         outState.putString("START_STOP_BUTTON_TEXT", start_stop_button.text.toString())
+        outState.putBoolean("START_UP_FIRST", false)
     }
 
     //アクティビティが再起動するときに呼び出される（データ読み出し）
@@ -195,11 +201,11 @@ class MainActivity : AppCompatActivity() {
 
         //保存領域から「CONTENT_VALUE」というキーの数値を取得
         showPictureNum = savedInstanceState.getInt("COUNT_VALUE")
-
         startStopButtonText = savedInstanceState.getString("START_STOP_BUTTON_TEXT")
+        startUpFirst = savedInstanceState.getBoolean("START_UP_FIRST")
         if (startStopButtonText == startButtonText) {
             //再生ボタン表示時
-            clickStop()
+//            clickStop()
         } else if (startStopButtonText == stopButtonText) {
             //停止ボタン表示時
 //            clickStop()
