@@ -1,18 +1,20 @@
 package jp.techacademy.yui.tanakayui.autoslideshowapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentUris
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
+import android.support.v4.content.ContextCompat.getColor
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
-import java.net.URI
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     private var startStopButtonText :String = ""
@@ -21,11 +23,15 @@ class MainActivity : AppCompatActivity() {
 
     private val PERMISSIONS_REQUEST_CODE = 100
 
-    private var count :Int = 0
     private var showPictureNum = 0
     private val uriArrayList = arrayListOf<Uri>()
     private var pictureNum = 0
 
+    private var mTimer: Timer? = null
+    private var mHandler = Handler()
+    private var color = 0
+
+    @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         //再生・停止ボタンの表示する文字列を取得
         startButtonText = resources.getString(R.string.start_button_text)
         stopButtonText = resources.getString(R.string.stop_button_text)
+        color= getColor(this, R.color.color_blue_slideshow)
 
         // Android 6.0以降の場合
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -50,18 +57,15 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
         //再生・停止ボタンの切り替え
         start_stop_button.setOnClickListener {
             startStopButtonText = start_stop_button.text.toString()
             if (startStopButtonText == startButtonText) {
-                start_stop_button.setText(R.string.stop_button_text)
-                forward_button.isClickable = false
-                back_button.isClickable = false
+                //再生ボタン押下時
+                clickStart()
             } else if (startStopButtonText == stopButtonText) {
-                start_stop_button.setText(R.string.start_button_text)
-                forward_button.isClickable = true
-                back_button.isClickable = true
+                //停止ボタン押下時
+                clickStop()
             }
         }
         //進むボタンクリック時の処理
@@ -84,7 +88,6 @@ class MainActivity : AppCompatActivity() {
                     getContentsInfo()
                 } else {
                     Log.d("ANDROID", "許可されなかった")
-                    //ボタンを押すと、アプリが落ちるので、対応策を考える
                 }
         }
     }
@@ -143,5 +146,64 @@ class MainActivity : AppCompatActivity() {
         }
         Log.d("testtest",(showPictureNum+ 1).toString() + "枚目")
         picture.setImageURI(uriArrayList[showPictureNum])
+    }
+
+    //再生ボタン押下時の処理
+    private fun clickStart(){
+        start_stop_button.setText(R.string.stop_button_text)
+        forward_button.isClickable = false
+        back_button.isClickable = false
+        activity_background.setBackgroundColor(color)
+        setTimer()
+    }
+    //停止ボタン押下時の処理
+    private fun clickStop(){
+        start_stop_button.setText(R.string.start_button_text)
+        forward_button.isClickable = true
+        back_button.isClickable = true
+        var color= getColor(this, R.color.color_pink_background)
+        activity_background.setBackgroundColor(color)
+        mTimer!!.cancel()
+    }
+    //タイマー処理
+    private fun setTimer(){
+        //タイマー処理
+        mTimer = Timer()
+        // タイマーの始動
+        mTimer!!.schedule(object : TimerTask() {
+            override fun run() {
+                mHandler.post {
+                    showNextPhoto()
+                }
+            }
+        }, 2000, 2000)
+    }
+
+    //画面の回転時に呼び出される（データを保存する）
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mTimer!!.cancel()
+
+        //保存領域に「CONTENT_VALUE」というキーの数値を保存
+        outState.putInt("COUNT_VALUE", showPictureNum)
+        outState.putString("START_STOP_BUTTON_TEXT", start_stop_button.text.toString())
+    }
+
+    //アクティビティが再起動するときに呼び出される（データ読み出し）
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        //保存領域から「CONTENT_VALUE」というキーの数値を取得
+        showPictureNum = savedInstanceState.getInt("COUNT_VALUE")
+
+        startStopButtonText = savedInstanceState.getString("START_STOP_BUTTON_TEXT")
+        if (startStopButtonText == startButtonText) {
+            //再生ボタン表示時
+            clickStop()
+        } else if (startStopButtonText == stopButtonText) {
+            //停止ボタン表示時
+//            clickStop()
+            clickStart()
+        }
     }
 }

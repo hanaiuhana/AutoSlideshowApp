@@ -20,24 +20,24 @@
                 />
         </shape>
     </item>
-    <item android:state_pressed="true" android:color="#0000FF" >
-        <shape
-            android:shape="rectangle" >
-            <!-- 枠線 width:線の幅、color:線の色 -->
-            <stroke
-                android:width="1.5dp"
-                android:color="#0000FF"
-                />
-        </shape>
-    </item>
-    <item android:state_pressed="false" android:color="#FF0000" >
-        <shape
-            android:shape="rectangle" >
-            <!-- 枠線 width:線の幅、color:線の色 -->
-            <stroke
-                android:width="1.5dp"
-                android:color="#FF0000"
-                />
-        </shape>
-    </item>
+<!--    <item android:state_pressed="true" android:color="#0000FF" >-->
+<!--        <shape-->
+<!--            android:shape="rectangle" >-->
+<!--            &lt;!&ndash; 枠線 width:線の幅、color:線の色 &ndash;&gt;-->
+<!--            <stroke-->
+<!--                android:width="1.5dp"-->
+<!--                android:color="#0000FF"-->
+<!--                />-->
+<!--        </shape>-->
+<!--    </item>-->
+<!--    <item android:state_pressed="false" android:color="#FF0000" >-->
+<!--        <shape-->
+<!--            android:shape="rectangle" >-->
+<!--            &lt;!&ndash; 枠線 width:線の幅、color:線の色 &ndash;&gt;-->
+<!--            <stroke-->
+<!--                android:width="1.5dp"-->
+<!--                android:color="#FF0000"-->
+<!--                />-->
+<!--        </shape>-->
+<!--    </item>-->
 </selector>
